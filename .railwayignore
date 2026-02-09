@@ -1,0 +1,9 @@
+# Ignore files that might confuse Railway's build detection
+node_modules/
+*.log
+.git/
+.github/
+docs/
+*.md
+!railway.toml
+!Dockerfile.railway

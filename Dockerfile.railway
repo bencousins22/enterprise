@@ -1,17 +1,13 @@
 # Agent Zero Enterprise - Railway Deployment
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     nginx \
-    redis-tools \
-    postgresql-client \
     curl \
-    jq \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
@@ -20,43 +16,37 @@ RUN git clone https://github.com/frdel/agent-zero.git /tmp/agent-zero && \
     cp -r /tmp/agent-zero/* /app/ && \
     rm -rf /tmp/agent-zero
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt || \
+# Install Python dependencies with fallback
+RUN pip install --no-cache-dir -r requirements.txt 2>/dev/null || \
     pip install --no-cache-dir \
     fastapi \
     uvicorn[standard] \
     python-dotenv \
     openai \
     anthropic \
-    redis \
-    psycopg2-binary \
     python-multipart \
     aiofiles \
-    websockets
+    websockets \
+    pydantic \
+    httpx
 
 # Copy enterprise configurations
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY start.sh /app/start.sh
-COPY railway.toml /app/railway.toml
 
-# Set up persistent volumes for Railway
-RUN mkdir -p /app/data /app/logs /app/memory /app/knowledge /app/projects
+# Set up directories
+RUN mkdir -p /app/data /app/logs /var/log/nginx && \
+    chmod +x /app/start.sh
 
-# Environment defaults for enterprise
+# Environment defaults
 ENV PYTHONUNBUFFERED=1
-ENV AGENT_ZERO_MODE=enterprise
-ENV WEB_UI_PORT=80
-ENV API_PORT=50001
-ENV LOG_LEVEL=INFO
 ENV PORT=80
+ENV API_PORT=50001
 
-# Make start script executable
-RUN chmod +x /app/start.sh
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
     CMD curl -f http://localhost/health || exit 1
 
-EXPOSE 80 50001
+EXPOSE 80
 
 CMD ["/bin/bash", "/app/start.sh"]

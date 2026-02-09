@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = []
+
+[phases.build]
+cmds = ["echo 'Using Dockerfile - skipping nixpacks build'"]
+
+[start]
+cmd = "echo 'This should not run - using Dockerfile'"
