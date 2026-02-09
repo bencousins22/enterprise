@@ -1,14 +1,38 @@
-# Agent Zero Enterprise - Railway Optimized
-FROM agent0ai/agent-zero:latest
+# Agent Zero Enterprise - Railway Deployment
+FROM python:3.11-slim
 
-# Install enterprise dependencies
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
+    git \
     nginx \
     redis-tools \
     postgresql-client \
     curl \
     jq \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
+
+# Clone Agent Zero repository
+RUN git clone https://github.com/frdel/agent-zero.git /tmp/agent-zero && \
+    cp -r /tmp/agent-zero/* /app/ && \
+    rm -rf /tmp/agent-zero
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt || \
+    pip install --no-cache-dir \
+    fastapi \
+    uvicorn[standard] \
+    python-dotenv \
+    openai \
+    anthropic \
+    redis \
+    psycopg2-binary \
+    python-multipart \
+    aiofiles \
+    websockets
 
 # Copy enterprise configurations
 COPY nginx.conf /etc/nginx/nginx.conf
@@ -24,6 +48,7 @@ ENV AGENT_ZERO_MODE=enterprise
 ENV WEB_UI_PORT=80
 ENV API_PORT=50001
 ENV LOG_LEVEL=INFO
+ENV PORT=80
 
 # Make start script executable
 RUN chmod +x /app/start.sh

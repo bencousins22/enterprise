@@ -5,20 +5,14 @@ echo "🚀 Initializing Agent Zero Enterprise..."
 echo "📅 $(date)"
 echo "🖥️  Hostname: $(hostname)"
 
-# Validate required environment variables
-required_vars=("AGENT_NAME" "AUTH_SECRET")
-missing_vars=()
-
-for var in "${required_vars[@]}"; do
-    if [ -z "${!var}" ]; then
-        missing_vars+=("$var")
-    fi
-done
-
-if [ ${#missing_vars[@]} -ne 0 ]; then
-    echo "❌ Error: Missing required environment variables: ${missing_vars[*]}"
-    exit 1
-fi
+# Set default values for optional variables
+export AGENT_NAME="${AGENT_NAME:-Enterprise-Agent}"
+export AUTH_SECRET="${AUTH_SECRET:-$(openssl rand -base64 32 2>/dev/null || echo 'default-secret-change-me')}"
+export LOG_LEVEL="${LOG_LEVEL:-INFO}"
+export WORKERS="${WORKERS:-4}"
+export PORT="${PORT:-80}"
+export API_PORT="${API_PORT:-50001}"
+export MEMORY_BACKEND="${MEMORY_BACKEND:-persistent}"
 
 # Set up data persistence
 mkdir -p /app/data/{memory,knowledge,logs,projects}
@@ -28,6 +22,8 @@ echo "✅ Data directories created"
 # Check AI API Keys
 if [ -n "$OPENAI_API_KEY" ]; then
     echo "✅ OpenAI API configured"
+else
+    echo "⚠️  Warning: OPENAI_API_KEY not set"
 fi
 
 if [ -n "$ANTHROPIC_API_KEY" ]; then
@@ -55,7 +51,9 @@ fi
 
 # Start Nginx reverse proxy
 echo "🌐 Starting Nginx..."
-nginx -t && service nginx start
+nginx -t && nginx -g "daemon off;" &
+NGINX_PID=$!
+echo "✅ Nginx started (PID: $NGINX_PID)"
 
 # Log configuration summary
 echo ""
@@ -67,6 +65,7 @@ echo "Memory Backend: $MEMORY_BACKEND"
 echo "Log Level:      $LOG_LEVEL"
 echo "Workers:        $WORKERS"
 echo "Port:           $PORT"
+echo "API Port:       $API_PORT"
 echo "════════════════════════════════════════════════"
 echo ""
 
@@ -74,15 +73,24 @@ echo ""
 echo "🤖 Starting Agent Zero..."
 cd /app
 
-# Check if main.py exists (fallback to docker-entrypoint if not)
-if [ -f "main.py" ]; then
-    exec python main.py \
-        --mode=enterprise \
-        --port="${PORT:-80}" \
-        --api-port="${API_PORT:-50001}" \
-        --workers="${WORKERS:-4}" \
-        --log-level="${LOG_LEVEL:-INFO}"
+# Find the main entry point
+if [ -f "run.py" ]; then
+    echo "✅ Found run.py, starting Agent Zero..."
+    exec python run.py
+elif [ -f "main.py" ]; then
+    echo "✅ Found main.py, starting Agent Zero..."
+    exec python main.py
+elif [ -f "webui/server.py" ]; then
+    echo "✅ Found webui/server.py, starting Agent Zero web interface..."
+    cd webui
+    exec python server.py
+elif [ -f "python/run_ui.py" ]; then
+    echo "✅ Found python/run_ui.py, starting Agent Zero..."
+    cd python
+    exec python run_ui.py
 else
-    echo "⚠️  main.py not found, using default entrypoint"
-    exec /app/docker-entrypoint.sh
+    echo "❌ Error: Could not find Agent Zero entry point"
+    echo "Available files:"
+    ls -la /app/
+    exit 1
 fi
