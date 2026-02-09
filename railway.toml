@@ -1,0 +1,25 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile.railway"
+
+[deploy]
+startCommand = "/app/start.sh"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+numReplicas = 2
+
+[deploy.env]
+PORT = "80"
+AGENT_NAME = "Enterprise-Agent"
+LOG_LEVEL = "INFO"
+MEMORY_BACKEND = "persistent"
+KNOWLEDGE_BASE_ENABLED = "true"
+AUTH_REQUIRED = "true"
+SESSION_TIMEOUT = "3600"
+MAX_UPLOAD_SIZE = "100MB"
+WORKERS = "4"
+MAX_CONCURRENT_AGENTS = "10"
+WEB_CONCURRENCY = "4"
+RAILWAY_ENVIRONMENT = "production"

@@ -1,0 +1,68 @@
+
+╔══════════════════════════════════════════════════════════════════╗
+║        🚀 PUSH TO GITHUB & DEPLOY TO RAILWAY                     ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  OPTION 1: AUTOMATED (Easiest - Requires GitHub Token)          ║
+║  ─────────────────────────────────────────────────────           ║
+║  cd /mnt/kimi/output/agent-zero-enterprise                       ║
+║  export GITHUB_TOKEN=ghp_your_personal_access_token_here         ║
+║  ./AUTO_PUSH.sh                                                  ║
+║                                                                  ║
+║  Get token: https://github.com/settings/tokens                   ║
+║  Required scopes: repo, workflow                                 ║
+║                                                                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  OPTION 2: GITHUB CLI (Interactive)                             ║
+║  ─────────────────────────────────────────────────────           ║
+║  cd /mnt/kimi/output/agent-zero-enterprise                       ║
+║  gh auth login  # Follow browser prompts                         ║
+║  gh repo create agent-zero-enterprise --public --source=. \     ║
+║    --remote=origin --push                                        ║
+║                                                                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  OPTION 3: WEB INTERFACE (Manual)                               ║
+║  ─────────────────────────────────────────────────────           ║
+║  1. Visit: https://github.com/new                                ║
+║  2. Repository name: agent-zero-enterprise                       ║
+║  3. Visibility: Public                                           ║
+║  4. ☐ Initialize with README (UNCHECK THIS)                     ║
+║  5. Click [Create repository]                                    ║
+║  6. Run these commands:                                          ║
+║                                                                  ║
+║     cd /mnt/kimi/output/agent-zero-enterprise                    ║
+║     git remote add origin \                                     ║
+║        https://github.com/YOURNAME/agent-zero-enterprise.git     ║
+║     git branch -M main                                           ║
+║     git push -u origin main                                      ║
+║                                                                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  AFTER GITHUB PUSH - DEPLOY TO RAILWAY:                         ║
+║  ─────────────────────────────────────────────────────           ║
+║  export RAILWAY_TOKEN=${RAILWAY_TOKEN}      ║
+║  railway login                                                   ║
+║  cd agent-zero-src && railway up                                 ║
+║                                                                  ║
+║  Or use: ./scripts/deploy-master.sh                             ║
+║                                                                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  ✅ INCLUDED IN REPO:                                            ║
+║  • Dockerfile.railway (Optimized container)                      ║
+║  • railway.toml (Platform config)                                ║
+║  • docker-compose.yml (Local dev)                                ║
+║  • nginx.conf (Load balancer)                                    ║
+║  • start.sh (Init script)                                        ║
+║  • .github/workflows/deploy.yml (Auto-deploy)                    ║
+║  • scripts/ (Setup, auth, deployment)                            ║
+║  • docs/ (Full documentation)                                    ║
+║  • README.md (GitHub front page)                                 ║
+║                                                                  ║
+║  🔒 SECURITY NOTE:                                               ║
+║  Secrets folder is gitignored (not pushed)                       ║
+║  SSH keys stay local                                             ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝

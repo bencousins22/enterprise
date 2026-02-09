@@ -1,0 +1,37 @@
+# Agent Zero Enterprise - Railway Optimized
+FROM agent0ai/agent-zero:latest
+
+# Install enterprise dependencies
+RUN apt-get update && apt-get install -y \
+    nginx \
+    redis-tools \
+    postgresql-client \
+    curl \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy enterprise configurations
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY start.sh /app/start.sh
+COPY railway.toml /app/railway.toml
+
+# Set up persistent volumes for Railway
+RUN mkdir -p /app/data /app/logs /app/memory /app/knowledge /app/projects
+
+# Environment defaults for enterprise
+ENV PYTHONUNBUFFERED=1
+ENV AGENT_ZERO_MODE=enterprise
+ENV WEB_UI_PORT=80
+ENV API_PORT=50001
+ENV LOG_LEVEL=INFO
+
+# Make start script executable
+RUN chmod +x /app/start.sh
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost/health || exit 1
+
+EXPOSE 80 50001
+
+CMD ["/bin/bash", "/app/start.sh"]

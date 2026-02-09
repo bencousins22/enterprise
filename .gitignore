@@ -1,0 +1,26 @@
+# Environment
+.env
+.env.local
+.env.deploy
+*.secret
+
+# SSH Keys (keep secure)
+secrets/ssh/*
+!secrets/ssh/*.pub
+!secrets/ssh/config
+
+# Data
+data/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Node
+node_modules/

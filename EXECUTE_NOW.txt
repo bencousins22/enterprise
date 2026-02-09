@@ -1,0 +1,90 @@
+
+╔══════════════════════════════════════════════════════════════════╗
+║     🤖 PROGRAMMATIC DEPLOYMENT - READY TO EXECUTE               ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  ✅ Credentials Configured:                                      ║
+║     Client ID: ecd8c21521690fa91ecaade2fcb751df                 ║
+║     Token: rlwy_oacs_...11b41dcc                                ║
+║                                                                  ║
+║  ✅ SSH Key Generated:                                           ║
+║     Type: ED25519 (Modern, secure)                              ║
+║     Location: secrets/ssh/agent_zero_deploy_key                 ║
+║     Public: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJBcXmrG7P...  ║
+║                                                                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║  🚀 EXECUTE NOW - CHOOSE ONE METHOD:                             ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  METHOD 1: Quick Deploy (Everything Auto)                       ║
+║  ─────────────────────────────────────────                       ║
+║  cd /mnt/kimi/output/agent-zero-enterprise                       ║
+║  ./scripts/deploy-master.sh my-project-name development         ║
+║                                                                  ║
+║  METHOD 2: Step-by-Step Manual                                  ║
+║  ─────────────────────────────────────────                       ║
+║  # 1. Set credentials                                            ║
+║  source ./scripts/railway-env.sh                                 ║
+║                                                                  ║
+║  # 2. Authenticate                                               ║
+║  railway login (uses token automatically)                        ║
+║                                                                  ║
+║  # 3. Deploy                                                     ║
+║  ./scripts/setup.sh                                              ║
+║                                                                  ║
+║  METHOD 3: Environment Only                                     ║
+║  ─────────────────────────────────────────                       ║
+║  source ./scripts/railway-env.sh                                 ║
+║  railway whoami  # Should show you're logged in                  ║
+║                                                                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║  📋 SSH KEY USAGE:                                               ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  Add this public key to:                                         ║
+║  • Railway Project Settings → Deploy → SSH Keys                 ║
+║  • GitHub Repository → Settings → Deploy Keys (if private)      ║
+║                                                                  ║
+║  Public Key:                                                     ║
+║  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJBcXmrG7PGf8mgh0hRl...   ║
+║                                                                  ║
+║  SSH into instance:                                              ║
+║  ./scripts/ssh-railway.sh 'railway run bash'                    ║
+║                                                                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║  🎯 WHAT THE MASTER SCRIPT DOES:                                 ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  1. Installs Railway CLI (if needed)                            ║
+║  2. Authenticates using your client credentials                 ║
+║  3. Clones Agent Zero (development branch)                      ║
+║  4. Copies enterprise config files (Dockerfile, nginx, etc)     ║
+║  5. Creates Railway project                                     ║
+║  6. Provisions PostgreSQL + Redis + Volume                      ║
+║  7. Sets environment variables (auth, security, etc)            ║
+║  8. Injects SSH keys for secure access                          ║
+║  9. Deploys to Railway                                          ║
+║  10. Shows you the live URL                                     ║
+║                                                                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║  🔒 SECURITY NOTES:                                              ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  • SSH key has no passphrase (for automation)                   ║
+║  • Credentials are embedded in scripts (keep secure!)           ║
+║  • Auth secret is auto-generated (32 bytes random)              ║
+║  • SSH keys are saved in secrets/ssh/ (chmod 600)               ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+🚀 TO DEPLOY RIGHT NOW:
+
+cd /mnt/kimi/output/agent-zero-enterprise
+./scripts/deploy-master.sh my-enterprise-agent development
+
+The script will:
+✓ Use your provided credentials automatically
+✓ Generate secure auth tokens
+✓ Clone and configure Agent Zero
+✓ Deploy to Railway with enterprise settings
+✓ Return the live URL
